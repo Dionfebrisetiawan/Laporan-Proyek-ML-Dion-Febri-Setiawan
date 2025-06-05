@@ -8,12 +8,6 @@ Dengan perkembangan teknologi dan ketersediaan data historis, machine learning d
 
 Proyek ini berfokus pada pembangunan model prediksi biaya asuransi individu berdasarkan data demografis dan gaya hidup, seperti usia, jenis kelamin, status merokok, BMI, dan jumlah tanggungan. Model ini diharapkan dapat meningkatkan akurasi estimasi biaya dan mendukung proses underwriting secara otomatis.
 
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Jelaskan mengapa dan bagaimana masalah tersebut harus diselesaikan
-- Menyertakan hasil riset terkait atau referensi. Referensi yang diberikan harus berasal dari sumber yang kredibel dan author yang jelas.
-- Format Referensi dapat mengacu pada penulisan sitasi [IEEE](https://journals.ieeeauthorcenter.ieee.org/wp-content/uploads/sites/7/IEEE_Reference_Guide.pdf), [APA](https://www.mendeley.com/guides/apa-citation-guide/) atau secara umum seperti [di sini](https://penerbitdeepublish.com/menulis-buku-membuat-sitasi-dengan-mudah/)
-- Sumber yang bisa digunakan [Scholar](https://scholar.google.com/)
-
 ## Business Understanding
 
 Dalam industri asuransi kesehatan, perusahaan perlu menentukan biaya premi yang sesuai berdasarkan risiko masing-masing individu. Jika premi terlalu rendah untuk individu berisiko tinggi, perusahaan bisa mengalami kerugian. Sebaliknya, jika premi terlalu tinggi untuk individu berisiko rendah, pelanggan mungkin merasa tidak adil dan beralih ke penyedia lain. Oleh karena itu, pemodelan prediktif berbasis machine learning dapat menjadi solusi yang efisien untuk memperkirakan biaya asuransi berdasarkan faktor-faktor yang relevan.
@@ -35,16 +29,20 @@ Menjelaskan tujuan dari pernyataan masalah:
 **Rubrik/Kriteria Tambahan (Opsional)**:
 
     Solution statements
-    - Mengimplementasikan minimal dua algoritma regresi (misalnya, Linear Regression dan Random Forest Regressor) dan membandingkan performanya menggunakan metrik evaluasi seperti RMSE, MAE, dan R² Score.
+    - Mengimplementasikan minimal dua algoritma regresi (misalnya, Linear Regression, Random Forest Regressor, dan Gradient Boosting) dan membandingkan performanya menggunakan metrik evaluasi seperti RMSE, MAE, dan R² Score.
 
     - Melakukan hyperparameter tuning pada model terbaik untuk meningkatkan performa prediksi.
 
-    - Menggunakan feature importance atau koefisien regresi untuk menganalisis faktor mana yang paling berpengaruh terhadap besarnya biaya asuransi.
+    - Menggunakan feature importance untuk menganalisis faktor mana yang paling berpengaruh terhadap besarnya biaya asuransi.
 
 ## Data Understanding
+### 1. **Sumber Data**
 Dataset yang digunakan dalam proyek ini adalah Prediction of Insurance Charges using Age, Gender, BMI, Children, Smoker, Region, yang diperoleh dari Kaggle. Dataset ini berisi 1.338 baris dan 7 fitur utama yang merepresentasikan berbagai faktor demografis dan kebiasaan hidup seseorang yang berpotensi memengaruhi besarnya biaya asuransi kesehatan yang harus dibayar.
 
-Kaggle : https://www.kaggle.com/datasets/thedevastator/prediction-of-insurance-charges-using-age-gender  
+Kaggle : https://www.kaggle.com/datasets/thedevastator/prediction-of-insurance-charges-using-age-gender
+
+### 2. **Struktur Data**
+Dataset ini berisi data pribadi peserta asuransi beserta dengan biaya tagihan asuransinya. Berdasarkan pengamatan dataset tersebut memiliki 1338 baris dan 7 kolom data.
 
 ### Variabel-variabel pada prediksi biaya asuransi dataset adalah sebagai berikut:
 - Age : merupakan usia individu yang memegang polis asuransi. Variabel ini bertipe numerik dan berpengaruh langsung terhadap besarnya premi yang harus dibayar. Umumnya, semakin tua usia, semakin tinggi risikonya.
@@ -55,80 +53,37 @@ Kaggle : https://www.kaggle.com/datasets/thedevastator/prediction-of-insurance-c
 - region : merupakan lokasi tempat tinggal pemegang polis di Amerika Serikat, dengan empat kategori: southeast, southwest, northwest, northeast. Bertipe kategorikal. Variabel ini bisa merepresentasikan perbedaan biaya layanan kesehatan antar wilayah.
 - charges : merupakan target variabel dalam proyek ini, yaitu total biaya asuransi kesehatan yang harus dibayarkan individu. Bertipe numerik dan akan diprediksi menggunakan algoritma regresi.
 
-**Rubrik/Kriteria Tambahan (Opsional)**:
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.metrics import mean_squared_error, r2_score
-
-# Load data
-data = pd.read_csv('insurance.csv')
-
-data.head()
-
-data.describe()
-
 ## Data Preparation
-Pada bagian ini Anda menerapkan dan menyebutkan teknik data preparation yang dilakukan. Teknik yang digunakan pada notebook dan laporan harus berurutan.
-
-### Memastikan tidak ada data yang hilang (missing/null)
-data.isnull().sum()
-### Mengkonversi dataset yang memiliki fitur kategorikal menjadi bentuk numerik agar bisa diproses oleh model:
-data['sex'] = data['sex'].map({'male': 0, 'female': 1})
-data['smoker'] = data['smoker'].map({'no': 0, 'yes': 1})
-data['region'] = data['region'].astype('category').cat.codes
-### Melakukan feature scaling pada fitur numerik dengan StandardScaler agar semua fitur memiliki distribusi yang sebanding:Feature Scaling
-scaler = StandardScaler()
-numerical_features = ['age', 'bmi', 'children', 'charges']
-data[numerical_features] = scaler.fit_transform(data[numerical_features])
-### Memisahkan fitur input (X) dan target output (y) sebelum training:
-X = data.drop('charges', axis=1)
-y = data['charges']
-### Membagi data menjadi data latih dan data uji untuk mengevaluasi kinerja model
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-
-A. Encoding Variabel Kategorikal
-Variabel kategorikal tidak dapat diproses langsung oleh sebagian besar algoritma machine learning. Oleh karena itu:
-- sex diubah menjadi angka biner: 0 untuk male dan 1 untuk female
-- smoker diubah menjadi angka biner: 0 untuk no dan 1 untuk yes
-- region diubah menjadi angka (0, 1, 2, 3) menggunakan label encoding.
-
-B. Mengecek Missing Values
-Hasilnya menunjukkan bahwa tidak ada missing value, sehingga tidak diperlukan penanganan tambahan.
-
-C. Feature Scaling (Normalisasi)
-Scaling dilakukan untuk memastikan model dapat bekerja optimal dan tidak bias terhadap fitur dengan nilai besar.
-
-D. Pemisahan Fitur atau Target dan Pemisahan Data Latih atau Uji
-Untuk memudahkan proses pelatihan, fitur (X) dan target (y) dipisahkan. Kemudian agar dapat mengukur performa model secara adil, data dibagi menjadi 80% data latih dan 20% data uji. Ini penting untuk mengevaluasi seberapa baik model mengeneralisasi data baru.
+1. Menghapus duplikasi data.
+2. Mengkonversi dataset yang memiliki fitur kategorikal menjadi bentuk numerik agar bisa diproses oleh model:
+    - sex diubah menjadi angka biner: 0 untuk male dan 1 untuk female
+    - smoker diubah menjadi angka biner: 0 untuk no dan 1 untuk yes
+    - region diubah menjadi angka (0, 1, 2, 3) menggunakan label encoding.
+4. Melakukan feature scaling pada fitur numerik dengan StandardScaler agar semua fitur memiliki distribusi yang sebanding.
+5. Memisahkan fitur input (X) dan target output (y) sebelum training, supaya dapat mengukur performa model secara adil.
+6. Membagi data menjadi data latih dan data uji untuk mengevaluasi kinerja model.
 
 ## Modeling
 Proyek ini, kita ingin memprediksi biaya asuransi (charges) berdasarkan informasi demografis dan gaya hidup seseorang. Karena variabel target bersifat numerik kontinu, maka permasalahan ini adalah regresi.
 
-- Linear Regression, model dasar dan mudah diinterpretasikan. Cocok untuk baseline.
-- Random Forest Regressor, model ensambel berbasis pohon yang kuat terhadap overfitting dan mampu menangkap hubungan non-linear.
-- Gradient Boosting Regressor, model boosting yang menggabungkan prediksi dari beberapa model lemah. Umumnya memberikan akurasi tinggi.
+### Pemilihan Model
 
-### Pelatihan Model
-models = {
-    'Linear Regression': LinearRegression(),
-    'Random Forest': RandomForestRegressor(random_state=42),
-    'Gradient Boosting': GradientBoostingRegressor(random_state=42)
-}
+1. Linear Regression adalah model regresi linier yang berusaha menemukan hubungan linier antara satu atau lebih variabel input (fitur) dengan variabel output (target). Parameter yang digunakan model ini antara lain:
+- fit_intercept : Jika nilai true maka model menghitung intercept (bias). Jika false maka model tidak menambahkan intercept.
+- normalize : digunakan untuk menormalisasi data sebelum regresi.
+- n_jobs : Jumlah core CPU yang digunakan. Jika -1, gunakan semua core. Hanya berguna di model besar.
 
-for name, model in models.items():
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-    mse = mean_squared_error(y_test, y_pred)
-    rmse = mse ** 0.5
-    r2 = r2_score(y_test, y_pred)
-    print(f"{name} → RMSE: {rmse:.3f}, R²: {r2:.3f}")
+2. Random Forest merupakan algoritma ensemble learning yang membangun banyak decision tree, lalu menggabungkan prediksi dari seluruh pohon (dalam regresi: mengambil rata-rata hasil). Algoritma ini cenderung lebih akurat daripada linear regression, dan lebih tahan terhadap overfitting karena menggunakan teknik bagging. Parameter yang digunakan model ini antara lain:
+- n_estimators (nilai 100) : Jumlah pohon keputusan (decision trees) yang dibangun. Semakin banyak, semakin akurat, tapi lebih lambat.
+- max_depth (nilai 10) : Maksimum kedalaman setiap pohon. Mengontrol overfitting. Nilai lebih besar = model lebih kompleks.
+- random_state (nilai 42) : Supaya hasil yang diproduksi secara konsisten setiap dijalankan.
+
+3. Gradient Boosting adalah teknik boosting di mana model dibangun secara bertahap. Setiap model baru memperbaiki kesalahan dari model sebelumnya dengan meminimalkan fungsi loss melalui gradien. Cocok untuk data kompleks dengan hubungan non-linear. Parameter yang digunakan model ini antara lain:
+- n_estimators : Jika jumlah boosting stages kecil maka jumlah akan semakin kecil yang digunakan. Sebaliknya semakin besar jumlah boosting stage yang digunakan maka akan semakin kompleks.
+- learning_rate : Nilai besar bisa membuat proses lebih cepat, tapi lebih berisiko. Sedangkan Nilai kecil membuat model belajar lebih lambat tapi lebih stabil dan akurat.
+- max_depth : Nilai besar akan lebih akurat di data training tapi berisiko overfitting. Sedangkan nilai kecil lebih sederhana dan umum, tapi mungkin melewatkan pola penting.
+- random_state (nilai 42): Supaya hasil yang diproduksi secara konsisten setiap dijalankan.
+
 
 **Rubrik/Kriteria Tambahan (Opsional)**: 
 Kelebihan dan Kekurangan Setiap Algoritma
@@ -159,7 +114,8 @@ C. Gradient Boosting
   - Proses pelatihan bisa memakan waktu lebih lama.
 
 ## Evaluation
-Pada bagian ini anda perlu menyebutkan metrik evaluasi yang digunakan. Lalu anda perlu menjelaskan hasil proyek berdasarkan metrik evaluasi yang digunakan.
+
+### Metrik Evaluasi Regresi 
 
 A. Mean Absolute Error, MAE menghitung rata-rata selisih absolut antara nilai aktual dengan nilai prediksi. Metrik ini memberikan gambaran seberapa jauh prediksi dari nilai sesungguhnya secara rata-rata dalam satuan asli.
 
@@ -168,18 +124,19 @@ RMSE memberikan penalti lebih besar terhadap prediksi yang meleset jauh. Ini ber
 
 C. R-squared (R² Score), menunjukkan seberapa baik model menjelaskan variansi dari target (charges). Nilai R² mendekati 1 menunjukkan model yang mampu menjelaskan sebagian besar variasi data.
 
+**Hasil Evaluasi Model**
+1. Model Linear Regression menghasilkan nilai Mean Absolute Error (MAE) sebesar 0.346. Nilai Root Mean Squared Error (RMSE) sebesar 0.479 mengindikasikan adanya kesalahan prediksi yang cukup tinggi, terutama jika terdapat outlier. Sementara itu, nilai R² (koefisien determinasi) sebesar 0.783 berarti model ini mampu menjelaskan sekitar 78.3% dari variasi dalam data target. Secara keseluruhan, model ini cukup baik namun masih kurang akurat dibandingkan dua model lainnya karena keterbatasannya dalam menangkap hubungan non-linear.
+2. Model Random Forest memberikan hasil yang lebih baik dengan MAE sebesar 0.208, yang berarti rata-rata kesalahan prediksi lebih kecil dibandingkan regresi linier. Nilai RMSE sebesar 0.378 menunjukkan model ini lebih mampu mengatasi nilai error besar. Dengan R² sebesar 0.865, model ini menjelaskan 86.5% dari variasi target, menunjukkan performa yang solid. 
+3. Model Gradient Boosting memberikan performa terbaik di antara ketiganya, dengan MAE paling rendah yaitu 0.202, yang berarti prediksi model ini paling dekat dengan nilai aktual secara konsisten. RMSE sebesar 0.360 menunjukkan model ini juga unggul dalam meminimalkan kesalahan besar. Dengan R² sebesar 0.878, model ini mampu menjelaskan hampir 87.8% variasi pada data target. 
+
 **Kesimpulan:**
 
-Model Random Forest Regressor yang digunakan dalam proyek ini menghasilkan metrik evaluasi sebagai berikut:
-- MAE: 2713.46, Rata-rata prediksi charges meleset sekitar $2713, yang masih tergolong baik dalam konteks biaya medis yang bisa sangat variatif.
-- RMSE: 4495.72, Nilai RMSE yang lebih tinggi dari MAE mengindikasikan adanya beberapa outlier, namun model tetap stabil.
-- R² Score: 0.86, dengan nilai R² sebesar 0.86, model ini mampu menjelaskan 86% variasi dalam data biaya asuransi berdasarkan fitur yang tersedia.
-- 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan formula metrik dan bagaimana metrik tersebut bekerja.
+Berdasarkan ketiga metrik evaluasi (MAE, RMSE, dan R²), Gradient Boosting Regressor dipilih sebagai model terbaik untuk digunakan dalam memprediksi biaya asuransi karena memberikan hasil prediksi paling akurat.
 
-**---Ini adalah bagian akhir laporan---**
+### Interpretasi Model: Feature Importance
+**Interpretasi:**
+1. Smoker memiliki pengaruh terbesar terhadap biaya asuransi. Artinya, status merokok sangat menentukan mahal atau tidaknya biaya asuransi.
+2. Age dan bmi juga berkontribusi besar, menunjukkan usia dan indeks massa tubuh berpengaruh besar dalam perhitungan biaya.
+3. Fitur seperti children atau region cenderung memiliki pengaruh lebih kecil.
 
-_Catatan:_
-- _Anda dapat menambahkan gambar, kode, atau tabel ke dalam laporan jika diperlukan. Temukan caranya pada contoh dokumen markdown di situs editor [Dillinger](https://dillinger.io/), [Github Guides: Mastering markdown](https://guides.github.com/features/mastering-markdown/), atau sumber lain di internet. Semangat!_
-- Jika terdapat penjelasan yang harus menyertakan code snippet, tuliskan dengan sewajarnya. Tidak perlu menuliskan keseluruhan kode project, cukup bagian yang ingin dijelaskan saja.
+Dengan menggunakan feature importance dari Gradient Boosting, kita bisa menyimpulkan bahwa fitur-fitur seperti smoker, age, dan bmi memiliki pengaruh paling besar terhadap prediksi biaya asuransi. Fitur lainnya seperti children atau region memberikan kontribusi yang lebih kecil terhadap model prediktif.
